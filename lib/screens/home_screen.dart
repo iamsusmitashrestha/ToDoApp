@@ -14,12 +14,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void _addNewTodo(String todo, DateTime chosenDate) {
     final newTodo = ToDo(
       todo: todo,
-      date: chosenDate,
+      dateTime: chosenDate,
+      done: false,
       id: DateTime.now().toString(),
     );
-    print("Hi");
     setState(() {
       _userTodos.add(newTodo);
+    });
+  }
+
+  void _delTodo(String id) {
+    setState(() {
+      _userTodos.removeWhere((todo) => todo.id == id);
     });
   }
 
@@ -29,14 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("To-Do"),
       ),
-      body: ToDoList(_userTodos),
+      body: ToDoList(_userTodos, _delTodo),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet<void>(
+              isScrollControlled: true,
               context: context,
               builder: (BuildContext context) {
-                return NewToDo(_addNewTodo);
+                return Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Wrap(
+                    children: [
+                      NewToDo(_addNewTodo),
+                    ],
+                  ),
+                );
               });
         },
       ),

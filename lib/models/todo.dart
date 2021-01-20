@@ -1,8 +1,8 @@
 class ToDo {
   final String id;
   final String todo;
-  final DateTime date;
-  // final bool done;
+  final DateTime dateTime;
+  bool done;
 
-  ToDo({this.date, this.id, this.todo});
+  ToDo({this.dateTime, this.id, this.todo, this.done});
 }

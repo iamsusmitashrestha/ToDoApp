@@ -5,42 +5,25 @@ class NewToDo extends StatefulWidget {
   final Function addNewTodo;
 
   NewToDo(this.addNewTodo);
+
   @override
   _NewToDoState createState() => _NewToDoState();
 }
 
 class _NewToDoState extends State<NewToDo> {
+  DateTime selectedDate = DateTime.now();
+  DateTime selectedTime = DateTime.now();
   final _todoController = TextEditingController();
-
-  DateTime _selectedDate;
-
-  void _showDate() {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 365)),
-    ).then((pickedDate) {
-      if (pickedDate == null) {
-        return;
-      }
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    });
-    // );
-  }
 
   void _submitData() {
     final enteredTodo = _todoController.text;
 
-    if (enteredTodo.isEmpty || _selectedDate == null) {
+    if (enteredTodo.isEmpty || selectedTime == null || selectedDate == null) {
       print("hELLO");
       return;
     }
-    print("hELLO BY");
 
-    widget.addNewTodo(enteredTodo, _selectedDate);
+    widget.addNewTodo(enteredTodo, selectedTime);
     Navigator.of(context).pop();
   }
 
@@ -59,14 +42,63 @@ class _NewToDoState extends State<NewToDo> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _selectedDate == null
+              selectedDate == null
                   ? Text("No date chosen !")
                   : Text(
-                      'Picked Date: ${DateFormat.yMd().format(_selectedDate)}'),
+                      'Picked Date: ${DateFormat.MMMd().format(selectedDate)}'),
               FlatButton(
-                onPressed: _showDate,
+                onPressed: () => showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(Duration(days: 365)),
+                ).then((pickedDate) {
+                  if (pickedDate == null) {
+                    return;
+                  }
+
+                  setState(() {
+                    selectedDate = pickedDate;
+                  });
+                }),
+                // );
+
                 child: Text(
                   "Pick Date",
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              selectedTime == null
+                  ? Text("No Time chosen !")
+                  : Text(
+                      'Picked Time: ${DateFormat.Hm().format(selectedTime)}'),
+              FlatButton(
+                onPressed: () => showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                ).then((pickedTime) {
+                  if (pickedTime == null) {
+                    return;
+                  }
+                  setState(() {
+                    selectedTime = DateTime(
+                        selectedDate.year,
+                        selectedDate.month,
+                        selectedDate.day,
+                        pickedTime.hour,
+                        pickedTime.minute);
+                  });
+                  print('\n${selectedTime.toString()}');
+                }),
+                // );
+
+                child: Text(
+                  "Pick Time",
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
               ),
